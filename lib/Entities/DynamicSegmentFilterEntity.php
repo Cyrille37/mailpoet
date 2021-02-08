@@ -21,6 +21,7 @@ class DynamicSegmentFilterEntity {
   const TYPE_USER_ROLE = 'userRole';
   const TYPE_EMAIL = 'email';
   const TYPE_WOOCOMMERCE = 'woocommerce';
+  const TYPE_CUSTOMFIELD = 'customField';
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SegmentEntity", inversedBy="filters")

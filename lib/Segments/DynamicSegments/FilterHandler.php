@@ -8,6 +8,7 @@ use MailPoet\Segments\DynamicSegments\Filters\EmailAction;
 use MailPoet\Segments\DynamicSegments\Filters\UserRole;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\Segments\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\Segments\DynamicSegments\Filters\CustomFieldFilter;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 
 class FilterHandler {
@@ -23,16 +24,21 @@ class FilterHandler {
   /** @var WooCommerceCategory */
   private $wooCommerceCategory;
 
+  /** @var CustomFieldFilter */
+  private $customField;
+
   public function __construct(
     EmailAction $emailAction,
     UserRole $userRole,
     WooCommerceProduct $wooCommerceProduct,
-    WooCommerceCategory $wooCommerceCategory
+    WooCommerceCategory $wooCommerceCategory,
+    CustomFieldFilter $customField
   ) {
     $this->emailAction = $emailAction;
     $this->userRole = $userRole;
     $this->wooCommerceProduct = $wooCommerceProduct;
     $this->wooCommerceCategory = $wooCommerceCategory;
+    $this->customField = $customField ;
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filterEntity): QueryBuilder {
@@ -47,6 +53,8 @@ class FilterHandler {
           return $this->wooCommerceProduct->apply($queryBuilder, $filterEntity);
         }
         return $this->wooCommerceCategory->apply($queryBuilder, $filterEntity);
+      case DynamicSegmentFilterEntity::TYPE_CUSTOMFIELD:
+        return $this->customField->apply($queryBuilder, $filterEntity);
       default:
         throw new InvalidSegmentTypeException('Invalid type', InvalidSegmentTypeException::INVALID_TYPE);
     }

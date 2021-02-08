@@ -11,5 +11,5 @@ class InvalidSegmentTypeException extends \Exception {
   const MISSING_NEWSLETTER_ID = 5;
   const MISSING_CATEGORY_ID = 6;
   const MISSING_PRODUCT_ID = 7;
-
+  const MISSING_CUSTOMFIELD_ID = 8;
 };
