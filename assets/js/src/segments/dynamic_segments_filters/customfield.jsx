@@ -34,7 +34,6 @@ const customfieldSelectField = {
   forceSelect2: true,
   getLabel: _.property('name'),
   getValue: _.property('id'),
-  values: [],
 };
 
 export default (formItems) => getCustomField(formItems).then((customField) => {
@@ -46,6 +45,7 @@ export default (formItems) => getCustomField(formItems).then((customField) => {
     case 'checkbox':
       break;
     case 'select':
+      customfieldSelectField.values = [];
       customField.params.values.forEach((item, idx) => {
         customfieldSelectField.values.push({ id: idx, name: item.value });
       });
