@@ -28,7 +28,7 @@ class WooCommerceCategory implements Filter {
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filterEntity): QueryBuilder {
-    global $wpdb;
+    global $wpdb ;
     $categoryId = (int)$filterEntity->getFilterDataParam('category_id');
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
     return $queryBuilder->innerJoin(
