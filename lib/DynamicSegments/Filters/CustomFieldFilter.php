@@ -7,11 +7,14 @@ use MailPoetVendor\Idiorm\ORM;
 class CustomFieldFilter implements Filter {
 
   const SEGMENT_TYPE = 'customField';
+
   /** @var int */
   private $customfield_id;
+  private $customfield_value ;
 
-  public function __construct($customfield_id) {
+  public function __construct($customfield_id, $customfield_value) {
     $this->customfield_id = (int)$customfield_id;
+    $this->customfield_value = (int)$customfield_value;
   }
 
   public function toSql(ORM $orm) {
@@ -22,6 +25,7 @@ class CustomFieldFilter implements Filter {
     return [
       'segmentType' => self::SEGMENT_TYPE,
       'customfield_id' => $this->customfield_id,
+      'customfield_value' => $this->customfield_value,
     ];
   }
 

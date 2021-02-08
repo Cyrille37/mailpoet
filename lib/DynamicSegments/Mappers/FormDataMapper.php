@@ -121,8 +121,10 @@ class FormDataMapper {
 
   protected function createCustomField($data)
   {
+    \error_log(print_r($data,true));
     if (empty($data['customfield_id'])) throw new InvalidSegmentTypeException('Missing customfield_id', InvalidSegmentTypeException::MISSING_CUSTOMFIELD_ID);
-    return [new CustomFieldFilter($data['customfield_id'])];
+    if (!isset($data['customfield_value'])) throw new InvalidSegmentTypeException('Missing customfield_value', InvalidSegmentTypeException::MISSING_CUSTOMFIELD_VALUE);
+    return [new CustomFieldFilter($data['customfield_id'], $data['customfield_value'])];
   }
 
 }

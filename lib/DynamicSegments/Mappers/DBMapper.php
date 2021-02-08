@@ -8,6 +8,7 @@ use MailPoet\DynamicSegments\Filters\Filter;
 use MailPoet\DynamicSegments\Filters\UserRole;
 use MailPoet\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\DynamicSegments\Filters\CustomFieldFilter;
 use MailPoet\Models\DynamicSegment;
 use MailPoet\Models\DynamicSegmentFilter;
 
@@ -65,6 +66,8 @@ class DBMapper {
           return new WooCommerceProduct($data['product_id']);
         }
         return new WooCommerceCategory($data['category_id']);
+      case CustomFieldFilter::SEGMENT_TYPE :
+        return new CustomFieldFilter($data['customfield_id'], $data['customfield_value']);
       default:
         throw new InvalidSegmentTypeException('Invalid type');
     }

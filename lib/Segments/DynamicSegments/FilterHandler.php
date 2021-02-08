@@ -42,6 +42,7 @@ class FilterHandler {
   }
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filterEntity): QueryBuilder {
+error_log('SegmentType:'.$filterEntity->getSegmentType());
     switch ($filterEntity->getSegmentType()) {
       case DynamicSegmentFilterEntity::TYPE_USER_ROLE:
         return $this->userRole->apply($queryBuilder, $filterEntity);
