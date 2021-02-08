@@ -27,6 +27,7 @@
     var mailpoet_product_categories = <%= json_encode(product_categories)  %>;
     var mailpoet_products = <%= json_encode(products) %>;
     var is_woocommerce_active = <%= json_encode(is_woocommerce_active)  %>;
+    var mailpoet_custom_fields = <%= json_encode(custom_fields)  %>;
 
   </script>
 <% endblock %>
@@ -154,5 +155,8 @@
     'selectWooPurchasedCategory': __('Search category'),
     'selectWooPurchasedProduct': __('Search products'),
     'woocommerce': _x('WooCommerce', 'Dynamic segment creation: User selects this to use any woocommerce filters'),
+
+    'selectCustomfields': __('Custom field'),
+    'selectCustomfieldValues': __('Custom field value'),
   }) %>
 <% endblock %>

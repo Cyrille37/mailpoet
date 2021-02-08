@@ -11,6 +11,7 @@ import HideScreenOptions from 'common/hide_screen_options/hide_screen_options';
 import wordpressRoleFields from './dynamic_segments_filters/wordpress_role.jsx';
 import emailFields from './dynamic_segments_filters/email.jsx';
 import woocommerceFields from './dynamic_segments_filters/woocommerce.jsx';
+import customfieldFields from './dynamic_segments_filters/customfield.jsx';
 
 const messages = {
   onUpdate: () => MailPoet.Notice.success(MailPoet.I18n.t('dynamicSegmentUpdated')),
@@ -28,6 +29,7 @@ function getAvailableFilters() {
   const filters = {
     email: MailPoet.I18n.t('email'),
     userRole: MailPoet.I18n.t('wpUserRole'),
+    customField: MailPoet.I18n.t('customField'),
   };
   if (window.is_woocommerce_active) {
     filters.woocommerce = MailPoet.I18n.t('woocommerce');
@@ -97,6 +99,9 @@ class DynamicSegmentForm extends React.Component {
 
       case 'woocommerce':
         return woocommerceFields(item);
+
+      case 'customField':
+        return customfieldFields(item);
 
       default: return [];
     }

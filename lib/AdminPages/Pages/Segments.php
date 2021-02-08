@@ -6,6 +6,7 @@ use MailPoet\AdminPages\PageRenderer;
 use MailPoet\Config\ServicesChecker;
 use MailPoet\Listing\PageLimit;
 use MailPoet\Models\Newsletter;
+use MailPoet\Models\CustomField;
 use MailPoet\Services\Bridge;
 use MailPoet\Util\License\Features\Subscribers as SubscribersFeature;
 use MailPoet\WooCommerce\Helper as WooCommerceHelper;
@@ -77,6 +78,12 @@ class Segments {
       ->whereNull('deleted_at')
       ->where('type', Newsletter::TYPE_STANDARD)
       ->orderByExpr('ISNULL(sent_at) DESC, sent_at DESC')->findArray();
+
+    $data['custom_fields'] = [];
+    foreach( CustomField::select(['id','name','type','params'])->findMany() as $cf )
+    {
+      $data['custom_fields'][] = $cf->asArray() ;
+    }
 
     $data['product_categories'] = $this->wpPostListLoader->getWooCommerceCategories();
 
