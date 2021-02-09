@@ -82,7 +82,15 @@ class Segments {
     $data['custom_fields'] = [];
     foreach( CustomField::select(['id','name','type','params'])->findMany() as $cf )
     {
-      $data['custom_fields'][] = $cf->asArray() ;
+      // Pour l'instant on ne prend que certains type
+      switch( $cf->type )
+      {
+        case 'select':
+          $data['custom_fields'][] = $cf->asArray() ;
+          break;
+        case 'checkbox':
+          break;
+      }
     }
 
     $data['product_categories'] = $this->wpPostListLoader->getWooCommerceCategories();
