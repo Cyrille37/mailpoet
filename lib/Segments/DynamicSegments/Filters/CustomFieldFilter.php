@@ -11,6 +11,7 @@ use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
 use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Models\CustomField;
+use MailPoetVendor\Doctrine\DBAL\Connection;
 
 class CustomFieldFilter implements Filter {
 
@@ -25,7 +26,7 @@ class CustomFieldFilter implements Filter {
 
     $customfield_id = $filterEntity->getFilterDataParam('customfield_id');
     $customfield_value = $filterEntity->getFilterDataParam('customfield_value');
-
+\error_log('apply()'.print_r($customfield_value,true));
     $customfield = CustomField::select(['id','name','type','params'])->findOne($customfield_id);
     //\error_log(print_r($customfield,true));
     \error_log(print_r($customfield->type,true));
@@ -39,7 +40,11 @@ class CustomFieldFilter implements Filter {
         {
           \error_log($value['value']);
         }*/
-        $customfield_value = $p['values'][$customfield_value]['value'];
+        $values = [];
+        foreach( $customfield_value as $val )
+        {
+          $values[]= $p['values'][$val]['value'];
+        }
         break ;
     }
     // wp_mailpoet_subscriber_custom_field1
@@ -50,10 +55,10 @@ class CustomFieldFilter implements Filter {
       $subscribersTable,
       $subscriberCustomFieldTable,
       'subcf',
-      $subscribersTable.'.id = subcf.subscriber_id AND subcf.`value`=:cfvalue'
+      $subscribersTable.'.id = subcf.subscriber_id AND subcf.`value` in (:cfvalue)'
     );
 
-    $queryBuilder = $queryBuilder->setParameter('cfvalue', $customfield_value);
+    $queryBuilder = $queryBuilder->setParameter('cfvalue', $values, Connection::PARAM_STR_ARRAY );
     return $queryBuilder;
   }
 
