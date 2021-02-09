@@ -29,6 +29,7 @@ const customfieldField = {
 const customfieldSelectField = {
   name: 'customfield_value',
   type: 'selection',
+  multiple: true,
   resetSelect2OnUpdate: true,
   placeholder: MailPoet.I18n.t('selectCustomfieldValues'),
   forceSelect2: true,

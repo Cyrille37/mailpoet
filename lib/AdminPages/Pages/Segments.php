@@ -84,6 +84,7 @@ class Segments {
     {
       $data['custom_fields'][] = $cf->asArray() ;
     }
+  \error_log( 'render() '.print_r($data['custom_fields'],true));
 
     $data['product_categories'] = $this->wpPostListLoader->getWooCommerceCategories();
 
