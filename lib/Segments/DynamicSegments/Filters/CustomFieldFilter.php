@@ -26,20 +26,14 @@ class CustomFieldFilter implements Filter {
 
     $customfield_id = $filterEntity->getFilterDataParam('customfield_id');
     $customfield_value = $filterEntity->getFilterDataParam('customfield_value');
-\error_log('apply()'.print_r($customfield_value,true));
+
     $customfield = CustomField::select(['id','name','type','params'])->findOne($customfield_id);
-    //\error_log(print_r($customfield,true));
-    \error_log(print_r($customfield->type,true));
-    //\error_log(print_r($customfield->params,true));
+
     switch ($customfield->type)
     {
       case 'select':
         $p = (is_array($customfield->params) ? $customfield->params : \unserialize($customfield->params) );
-        /*\error_log(print_r($p,true));
-        foreach( $p['values'] as $i => $value )
-        {
-          \error_log($value['value']);
-        }*/
+
         $values = [];
         foreach( $customfield_value as $val )
         {
@@ -47,6 +41,7 @@ class CustomFieldFilter implements Filter {
         }
         break ;
     }
+
     // wp_mailpoet_subscriber_custom_field1
     $subscriberCustomFieldTable = $this->entityManager->getClassMetadata(SubscriberCustomFieldEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
