@@ -12,7 +12,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
 
 import ParagraphEdit from '../paragraph_edit.jsx';
 import formatLabel from '../label_formatter.jsx';
-import CustomFieldSettings from '../custom_radio/custom_field_settings.jsx';
+import CustomFieldSettings from './custom_field_settings.jsx';
 import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 import convertAlignmentToMargin from '../convert_alignment_to_margin';
 
@@ -50,6 +50,7 @@ const CustomSelectEdit = ({ attributes, setAttributes, clientId }) => {
               },
               onFinish: () => setAttributes({
                 mandatory: params.mandatory,
+                multiple: params.multiple,
                 values: params.values,
               }),
             })}
@@ -151,6 +152,7 @@ CustomSelectEdit.propTypes = {
       id: PropTypes.string.isRequired,
     })),
     mandatory: PropTypes.bool.isRequired,
+    // multiple: PropTypes.bool.isRequired,
     className: PropTypes.string,
   }).isRequired,
   setAttributes: PropTypes.func.isRequired,

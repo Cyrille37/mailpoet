@@ -16,7 +16,6 @@ function mapFormDataToParams(fieldType, data) {
         is_default_today: data.defaultToday ? '1' : '',
       };
     case 'radio':
-    case 'select':
       return {
         required: data.mandatory ? '1' : '',
         values: data.values.map((value) => {
@@ -26,6 +25,21 @@ function mapFormDataToParams(fieldType, data) {
           }
           return mapped;
         }),
+      };
+    case 'select':
+      return {
+        required: data.mandatory ? '1' : '',
+        multiple: data.multiple ? '1' : '',
+        values: {
+          values: data.values.map((value) => {
+            const mapped = { value: value.name };
+            if (value.isChecked) {
+              mapped.is_checked = '1';
+            }
+            return mapped;
+          }),
+          multiple: data.multiple ? '1' : '',
+        },
       };
     case 'text':
       return {

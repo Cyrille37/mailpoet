@@ -73,7 +73,10 @@ class ApiDataSanitizer {
       return $this->getExtraParamsForText($data['params']);
     }
 
-    if (in_array($type, [CustomField::TYPE_RADIO, CustomField::TYPE_SELECT], true)) {
+    if ($type === CustomField::TYPE_RADIO) {
+      return $this->getExtraParamsForRadio($data['params']);
+    }
+    if ($type === CustomField::TYPE_SELECT) {
       return $this->getExtraParamsForSelect($data['params']);
     }
 
@@ -148,7 +151,7 @@ class ApiDataSanitizer {
     ];
   }
 
-  private function getExtraParamsForSelect($params) {
+  private function getExtraParamsForRadio($params) {
     if (empty($params['values'])) {
       throw new InvalidArgumentException(__('You need to pass some values for this type', 'mailpoet'), self::ERROR_NO_VALUES);
     }
@@ -157,6 +160,21 @@ class ApiDataSanitizer {
       $values[] = $this->sanitizeValue($value);
     }
     return ['values' => $values];
+  }
+
+  private function getExtraParamsForSelect($params) {
+    if (empty($params['values'])) {
+      throw new InvalidArgumentException(__('You need to pass some values for this type', 'mailpoet'), self::ERROR_NO_VALUES);
+    }
+    $values = [];
+    foreach ($params['values'] as $value) {
+      $values[] = $this->sanitizeValue($value);
+    }
+    $multiple = false ;
+    if( isset($params['multiple']) )
+      $multiple = $params['multiple'] ? true : false ;
+
+    return ['multiple'=>$multiple, 'values' => $values];
   }
 
   private function sanitizeValue($value) {

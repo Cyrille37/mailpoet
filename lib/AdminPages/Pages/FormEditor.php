@@ -231,6 +231,16 @@ class FormEditor {
     }
     $form = $this->getFormData((int)$_GET['id']);
     $customFields = $this->customFieldsRepository->findAll();
+/*foreach( $customFields as &$cf )
+{
+  if( $cf->getType() == 'select')
+  {
+    $p = $cf->getParams();
+    $p['multiple'] = false ;
+    $cf->setParams($p);
+  }
+}*/
+\error_log('customFields: '.print_r($customFields,true));
     $dateTypes = $this->dateBlock->getDateTypes();
     $data = [
       'form' => $form,

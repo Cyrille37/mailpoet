@@ -23,6 +23,10 @@ export function getSettings(customField) {
         type: 'boolean',
         default: customField.params.required ? !!customField.params.required : false,
       },
+      multiple: {
+        type: 'boolean',
+        default: customField.params.multiple ? !!customField.params.multiple : false,
+      },
       values: {
         type: 'array',
         default: customField.params.values

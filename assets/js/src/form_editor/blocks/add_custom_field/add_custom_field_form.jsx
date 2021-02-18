@@ -13,7 +13,9 @@ import mapCustomFieldFormData from '../map_custom_field_form_data.jsx';
 import TextFieldSettings from '../custom_text/custom_field_settings.jsx';
 import CheckboxFieldSettings from '../custom_checkbox/custom_field_settings.jsx';
 import DateFieldSettings from '../custom_date/custom_field_settings.jsx';
-import RadioAndSelectFieldSettings from '../custom_radio/custom_field_settings.jsx';
+// import RadioAndSelectFieldSettings from '../custom_radio/custom_field_settings.jsx';
+import RadioFieldSettings from '../custom_radio/custom_field_settings.jsx';
+import SelectFieldSettings from '../custom_select/custom_field_settings.jsx';
 
 export const customFieldTypes = [
   {
@@ -74,10 +76,18 @@ const AddCustomFieldForm = ({ dateSettings, onSubmit }) => {
           />
         );
       case 'radio':
+        return (
+          <RadioFieldSettings
+            mandatory={fieldSettings.mandatory ? fieldSettings.mandatory : false}
+            values={fieldSettings.values ? fieldSettings.values : [{ name: '', id: Math.random().toString() }]}
+            onChange={setFieldSettings}
+          />
+        );
       case 'select':
         return (
-          <RadioAndSelectFieldSettings
+          <SelectFieldSettings
             mandatory={fieldSettings.mandatory ? fieldSettings.mandatory : false}
+            multiple={fieldSettings.multiple ? fieldSettings.multiple : false}
             values={fieldSettings.values ? fieldSettings.values : [{ name: '', id: Math.random().toString() }]}
             onChange={setFieldSettings}
           />
