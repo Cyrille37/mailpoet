@@ -5,10 +5,15 @@ namespace MailPoet\API\JSON\v1;
 use MailPoet\API\JSON\Endpoint as APIEndpoint;
 use MailPoet\Config\AccessControl;
 use MailPoet\Cron\Workers\WooCommerceSync;
+use MailPoet\CustomFields\CustomFieldsRepository;
 use MailPoet\Models\ScheduledTask;
 use MailPoet\Models\Segment;
+use MailPoet\Newsletter\Options\NewsletterOptionsRepository;
 use MailPoet\Segments\WP;
+use MailPoet\Subscribers\ImportExport\Import\Import;
 use MailPoet\Subscribers\ImportExport\Import\MailChimp;
+use MailPoet\Subscribers\ImportExport\ImportExportRepository;
+use MailPoet\Subscribers\SubscribersRepository;
 use MailPoetVendor\Carbon\Carbon;
 
 class ImportExport extends APIEndpoint {
@@ -16,12 +21,34 @@ class ImportExport extends APIEndpoint {
   /** @var WP */
   private $wpSegment;
 
+  /** @var CustomFieldsRepository */
+  private $customFieldsRepository;
+
+  /** @var ImportExportRepository */
+  private $importExportRepository;
+
+  /** @var NewsletterOptionsRepository */
+  private $newsletterOptionsRepository;
+
+  /** @var SubscribersRepository */
+  private $subscriberRepository;
+
   public $permissions = [
     'global' => AccessControl::PERMISSION_MANAGE_SUBSCRIBERS,
   ];
 
-  public function __construct(WP $wpSegment) {
+  public function __construct(
+    WP $wpSegment,
+    CustomFieldsRepository $customFieldsRepository,
+    ImportExportRepository $importExportRepository,
+    NewsletterOptionsRepository $newsletterOptionsRepository,
+    SubscribersRepository $subscribersRepository
+  ) {
     $this->wpSegment = $wpSegment;
+    $this->customFieldsRepository = $customFieldsRepository;
+    $this->importExportRepository = $importExportRepository;
+    $this->newsletterOptionsRepository = $newsletterOptionsRepository;
+    $this->subscriberRepository = $subscribersRepository;
   }
 
   public function getMailChimpLists($data) {
@@ -63,8 +90,12 @@ class ImportExport extends APIEndpoint {
 
   public function processImport($data) {
     try {
-      $import = new \MailPoet\Subscribers\ImportExport\Import\Import(
+      $import = new Import(
         $this->wpSegment,
+        $this->customFieldsRepository,
+        $this->importExportRepository,
+        $this->newsletterOptionsRepository,
+        $this->subscriberRepository,
         json_decode($data, true)
       );
       $process = $import->process();
