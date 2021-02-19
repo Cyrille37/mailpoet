@@ -8,6 +8,7 @@ use MailPoet\DynamicSegments\Filters\Filter;
 use MailPoet\DynamicSegments\Filters\UserRole;
 use MailPoet\DynamicSegments\Filters\WooCommerceCategory;
 use MailPoet\DynamicSegments\Filters\WooCommerceProduct;
+use MailPoet\DynamicSegments\Filters\CustomFieldFilter;
 use MailPoet\Models\DynamicSegment;
 
 class FormDataMapper {
@@ -61,6 +62,8 @@ class FormDataMapper {
         return $this->createEmail($data);
       case 'woocommerce':
         return $this->createWooCommerce($data);
+      case CustomFieldFilter::SEGMENT_TYPE:
+        return [CustomFieldFilter::createFromArray( $data )];
       default:
         throw new InvalidSegmentTypeException('Invalid type', InvalidSegmentTypeException::INVALID_TYPE);
     }
