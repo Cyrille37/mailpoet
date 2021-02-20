@@ -7,6 +7,7 @@ use MailPoet\Doctrine\EntityTraits\CreatedAtTrait;
 use MailPoet\Doctrine\EntityTraits\SafeToOneAssociationLoadTrait;
 use MailPoet\Doctrine\EntityTraits\UpdatedAtTrait;
 use MailPoetVendor\Doctrine\ORM\Mapping as ORM;
+use MailPoet\DynamicSegments\Filters\CustomFieldFilter;
 
 /**
  * @ORM\Entity()
@@ -21,6 +22,7 @@ class DynamicSegmentFilterEntity {
   const TYPE_USER_ROLE = 'userRole';
   const TYPE_EMAIL = 'email';
   const TYPE_WOOCOMMERCE = 'woocommerce';
+  const TYPE_CUSTOMFIELD = CustomFieldFilter::SEGMENT_TYPE ;
 
   /**
    * @ORM\ManyToOne(targetEntity="MailPoet\Entities\SegmentEntity", inversedBy="filters")
