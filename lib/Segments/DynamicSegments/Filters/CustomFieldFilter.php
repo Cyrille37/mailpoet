@@ -30,24 +30,27 @@ class CustomFieldFilter implements Filter {
     $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
 
     //
-    // Only "subscribed" subscribers
+    // Only those subscribed to $newsletterId
     //
 
-    $queryBuilder->where( $subscribersTable.'.status=:SubStatus');
-    $queryBuilder->setParameter('SubStatus', SubscriberEntity::STATUS_SUBSCRIBED );
+    $queryBuilder
+      ->andwhere( $subscribersTable.'.deleted_at is null')
+      ->andWhere( $subscribersTable.'.status=:subStatus');
+    $queryBuilder->setParameter('subStatus', SubscriberEntity::STATUS_SUBSCRIBED );
 
     //
     // Only those subscribed to $newsletterId
     //
 
     $alias = 'subseg' ;
-    $queryBuilder = $queryBuilder->leftJoin(
+    $queryBuilder->leftJoin(
       $subscribersTable,
       $subscriberSegmentTable,
       $alias,
-      $subscribersTable.'.id = '.$alias.'.subscriber_id AND '.$alias.'.segment_id='.$newsletterId
+      $subscribersTable.'.id = '.$alias.'.subscriber_id AND '.$alias.'.segment_id=:newsletterId'
     );
-    $queryBuilder->where( $alias.'.id is not null');
+    $queryBuilder->setParameter('newsletterId', $newsletterId );
+    $queryBuilder->andWhere( $alias.'.id is not null');
 
     //
     // And they match custom fields defined in this filter.
@@ -89,7 +92,7 @@ class CustomFieldFilter implements Filter {
             throw new \InvalidArgumentException('CustomField type "'.$cf->type.'" is not implemented');
         }
       }
-      $queryBuilder = $queryBuilder->innerJoin(
+      $queryBuilder->innerJoin(
         $subscribersTable,
         $subscriberCustomFieldTable,
         $alias,
@@ -99,12 +102,12 @@ class CustomFieldFilter implements Filter {
     for( $i=0; $i<count($cfValue); $i++ )
     {
       if( is_array($cfValue[$i]) )
-        $queryBuilder = $queryBuilder->setParameter('cfValue'.$i, $cfValue[$i], Connection::PARAM_STR_ARRAY );  
+        $queryBuilder->setParameter('cfValue'.$i, $cfValue[$i], Connection::PARAM_STR_ARRAY );  
       else
-        $queryBuilder = $queryBuilder->setParameter('cfValue'.$i, $cfValue[$i] );  
+        $queryBuilder->setParameter('cfValue'.$i, $cfValue[$i] );  
     }
 
-    //\Artefacts\Mailpoet\Segment\Admin\Admin::debug(__METHOD__, $queryBuilder->getSQL(), $queryBuilder->getParameters() );
+    \Artefacts\Mailpoet\Segment\Admin\Admin::debug(__METHOD__, $queryBuilder->getSQL(), $queryBuilder->getParameters() );
 
     return $queryBuilder;
   }
