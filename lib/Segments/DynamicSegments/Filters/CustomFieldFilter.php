@@ -3,13 +3,11 @@
 namespace MailPoet\Segments\DynamicSegments\Filters;
 
 use MailPoet\Entities\DynamicSegmentFilterEntity;
-use MailPoet\Entities\StatisticsClickEntity;
-use MailPoet\Entities\StatisticsNewsletterEntity;
-use MailPoet\Entities\StatisticsOpenEntity;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Entities\SubscriberSegmentEntity;
+use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoetVendor\Doctrine\DBAL\Query\QueryBuilder;
 use MailPoetVendor\Doctrine\ORM\EntityManager;
-use MailPoet\Entities\SubscriberCustomFieldEntity;
 use MailPoet\Models\CustomField;
 use MailPoetVendor\Doctrine\DBAL\Connection;
 
@@ -24,11 +22,36 @@ class CustomFieldFilter implements Filter {
 
   public function apply(QueryBuilder $queryBuilder, DynamicSegmentFilterEntity $filterEntity): QueryBuilder {
 
-    $filter_id = $filterEntity->getFilterDataParam('id');
+    $newsletterId = (int)$filterEntity->getFilterDataParam('newsletter_id');
     $segments = $filterEntity->getFilterDataParam('segments');
 
     $subscriberCustomFieldTable = $this->entityManager->getClassMetadata(SubscriberCustomFieldEntity::class)->getTableName();
     $subscribersTable = $this->entityManager->getClassMetadata(SubscriberEntity::class)->getTableName();
+    $subscriberSegmentTable = $this->entityManager->getClassMetadata(SubscriberSegmentEntity::class)->getTableName();
+
+    //
+    // Only "subscribed" subscribers
+    //
+
+    $queryBuilder->where( $subscribersTable.'.status=:SubStatus');
+    $queryBuilder->setParameter('SubStatus', SubscriberEntity::STATUS_SUBSCRIBED );
+
+    //
+    // Only those subscribed to $newsletterId
+    //
+
+    $alias = 'subseg' ;
+    $queryBuilder = $queryBuilder->leftJoin(
+      $subscribersTable,
+      $subscriberSegmentTable,
+      $alias,
+      $subscribersTable.'.id = '.$alias.'.subscriber_id AND '.$alias.'.segment_id='.$newsletterId
+    );
+    $queryBuilder->where( $alias.'.id is not null');
+
+    //
+    // And they match custom fields defined in this filter.
+    //
 
     $cf_cache = [];
 
@@ -43,8 +66,6 @@ class CustomFieldFilter implements Filter {
       for( $cf_idx=0; $cf_idx < $seg_cf_count; $cf_idx++ )
       {
         $seg_cf = $seg[$cf_idx];
-        //\Artefacts\Mailpoet\Segment\Admin\Admin::debug(__METHOD__, 'seg_idx:', $seg_idx, 'seg_cf:', $seg_cf);
-
         $cf_id = str_replace( 'cf_', '', $seg_cf['cf_id'] );
 
         if( ! isset($cf_cache[$cf_id]) )
@@ -68,16 +89,13 @@ class CustomFieldFilter implements Filter {
             throw new \InvalidArgumentException('CustomField type "'.$cf->type.'" is not implemented');
         }
       }
-
       $queryBuilder = $queryBuilder->innerJoin(
         $subscribersTable,
         $subscriberCustomFieldTable,
         $alias,
         $subscribersTable.'.id = '.$alias.'.subscriber_id AND ('.$and.')'
       );
-
     }
-
     for( $i=0; $i<count($cfValue); $i++ )
     {
       if( is_array($cfValue[$i]) )
@@ -86,33 +104,7 @@ class CustomFieldFilter implements Filter {
         $queryBuilder = $queryBuilder->setParameter('cfValue'.$i, $cfValue[$i] );  
     }
 
-    \Artefacts\Mailpoet\Segment\Admin\Admin::debug(__METHOD__, $queryBuilder->getSQL() );
-
-    /*
-    switch ($customfield->type)
-    {
-      case 'select':
-        $p = (is_array($customfield->params) ? $customfield->params : \unserialize($customfield->params) );
-
-        $values = [];
-        foreach( $customfield_value as $val )
-        {
-          $values[]= $p['values'][$val]['value'];
-        }
-        break ;
-    }
-
-    // wp_mailpoet_subscriber_custom_field1
-
-    $queryBuilder = $queryBuilder->innerJoin(
-      $subscribersTable,
-      $subscriberCustomFieldTable,
-      'subcf',
-      $subscribersTable.'.id = subcf.subscriber_id AND subcf.`value` in (:cfvalue)'
-    );
-
-    $queryBuilder = $queryBuilder->setParameter('cfvalue', $values, Connection::PARAM_STR_ARRAY );
-    */
+    //\Artefacts\Mailpoet\Segment\Admin\Admin::debug(__METHOD__, $queryBuilder->getSQL(), $queryBuilder->getParameters() );
 
     return $queryBuilder;
   }
